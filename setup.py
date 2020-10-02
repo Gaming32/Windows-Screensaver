@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name = 'Windows-Screensaver',
-    version = '1.1.0.1',
+    version = '1.1.1',
     url = 'https://github.com/gaming32/Windows-Screensaver',
     author = 'Gaming32',
     author_email = 'gaming32i64@gmail.com',

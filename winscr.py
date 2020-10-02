@@ -7,7 +7,7 @@ from typing import Optional
 
 import win32gui
 
-__version__ = '1.1.0'
+__version__ = '1.1.1'
 __author__ = 'Gaming32'
 
 
@@ -62,7 +62,8 @@ class Screensaver:
 
 
 default_logfile = tempfile.mktemp('.log', 'screensaver_')
-def parse_cmdline(argv=None, handle=None, logfile=default_logfile) -> Screensaver:
+default_errlog = default_logfile.replace('.log', '.err.log')
+def parse_cmdline(argv=None, handle=None, logfile=default_logfile, err_log=default_errlog) -> Screensaver:
     try:
         scr = Screensaver.parse_cmdline(argv)
     except ValueError:
@@ -71,6 +72,8 @@ def parse_cmdline(argv=None, handle=None, logfile=default_logfile) -> Screensave
     scr.handle = handle
     if logfile is not None:
         redirect_stdout(logfile)
+    if err_log is not None:
+        redirect_stderr(err_log)
     return scr
 
 
@@ -79,6 +82,13 @@ def redirect_stdout(logfile=None):
         sys.stdout = sys.__stdout__
         return
     sys.stdout = open(logfile, 'w')
+
+
+def redirect_stderr(logfile=None):
+    if logfile is None:
+        sys.stderr = sys.__stderr__
+        return
+    sys.stderr = open(logfile, 'w')
 
 
 if __name__ == '__main__':
