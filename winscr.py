@@ -1,11 +1,13 @@
 import enum
+import os
 import sys
 import warnings
+import tempfile
 from typing import Optional
 
 import win32gui
 
-__version__ = '1.0.0'
+__version__ = '1.1.0'
 __author__ = 'Gaming32'
 
 
@@ -52,19 +54,31 @@ class Screensaver:
         return f'{self.__class__.__qualname__}.parse_cmdline({self.recreate_cmdline()!r})'
 
     def reparent(self):
+        if self.specified_handle is None:
+            return
         if self.handle is None:
             raise ValueError('no window specified to reparent')
         win32gui.SetParent(self.handle, self.specified_handle)
 
 
-def parse_cmdline(argv=None, handle=None) -> Screensaver:
+default_logfile = tempfile.mktemp('.log', 'screensaver_')
+def parse_cmdline(argv=None, handle=None, logfile=default_logfile) -> Screensaver:
     try:
         scr = Screensaver.parse_cmdline(argv)
     except ValueError:
         err_argv = sys.argv[1:] if argv is None else argv
         raise ValueError(f'Incorrect command line arguments passed: {err_argv}') from None
     scr.handle = handle
+    if logfile is not None:
+        redirect_stdout(logfile)
     return scr
+
+
+def redirect_stdout(logfile=None):
+    if logfile is None:
+        sys.stdout = sys.__stdout__
+        return
+    sys.stdout = open(logfile, 'w')
 
 
 if __name__ == '__main__':
